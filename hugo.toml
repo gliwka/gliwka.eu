@@ -32,4 +32,6 @@ theme = 'hugo-neso'
             featured_entries_limit         = 2
         [params.neso.home.profile]
             avatar_image                   = "img/avatar.jpeg"
+            avatar_image_size              = 260
+            avatar_image_size_sm           = 260
             avatar_image_alt_text          = "Matthias Gliwka's avatar"
