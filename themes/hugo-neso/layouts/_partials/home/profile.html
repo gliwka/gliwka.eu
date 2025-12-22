@@ -10,7 +10,7 @@
         {{- /* 1) <figure> container size (1x, CSS) */}}
         {{- $size     := int (.avatar_image_size | default 160) }}
         {{- $sizeSm   := int (.avatar_image_size_sm | default 128) }}
-        {{- $figClass := printf "not-last:mb-r-lg size-[%dpx] md:size-[%dpx] overflow-clip" $sizeSm $size }}
+        {{- $figClass := printf "not-last:mb-r-lg size-[%dpx] md:size-[%dpx] rounded-full overflow-clip" $sizeSm $size }}
         {{- $imgClass := "size-full object-cover" }}
 
         {{- /* absolute url or asset? */}}
