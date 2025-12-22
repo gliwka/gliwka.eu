@@ -1,0 +1,83 @@
+name: Build and deploy
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pages
+  cancel-in-progress: false
+defaults:
+  run:
+    shell: bash
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GO_VERSION: 1.25.5
+      HUGO_VERSION: 0.153.2
+      NODE_VERSION: 24.12.0
+      TZ: Europe/Berlin
+    steps:
+      - name: Checkout
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
+      - name: Setup Go
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Create directory for user-specific executable files
+        run: |
+          mkdir -p "${HOME}/.local"
+      - name: Install Hugo
+        run: |
+          curl -sLJO "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
+          mkdir "${HOME}/.local/hugo"
+          tar -C "${HOME}/.local/hugo" -xf "hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
+          rm "hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
+          echo "${HOME}/.local/hugo" >> "${GITHUB_PATH}"
+      - name: Verify installations
+        run: |
+          echo "Go: $(go version)"
+          echo "Hugo: $(hugo version)"
+          echo "Node.js: $(node --version)"
+      - name: Install Node.js dependencies
+        run: |
+          [[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true
+      - name: Configure Git
+        run: |
+          git config core.quotepath false
+      - name: Cache restore
+        id: cache-restore
+        uses: actions/cache/restore@c4ee99a3bdb9b3eeaeccc57bffd49a5641203371
+        with:
+          path: ${{ runner.temp }}/hugo_cache
+          key: hugo-${{ github.run_id }}
+          restore-keys:
+            hugo-
+      - name: Build the site
+        run: |
+          hugo \
+            --gc \
+            --minify \
+            --cacheDir "${{ runner.temp }}/hugo_cache"
+      - name: Cache save
+        id: cache-save
+        uses: actions/cache/save@36f1e144e1c8edb0a652766b484448563d8baf46
+        with:
+          path: ${{ runner.temp }}/hugo_cache
+          key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+      - name: Install thumper
+        uses: baptiste0928/cargo-install@b687c656bda5733207e629b50a22bf68974a0305
+        with:
+          crate: thumper
+      - name: Run sync
+        run: thumper sync -v ./public gliwka-eu-storage
+        env:
+          THUMPER_KEY: ${{ secrets.THUMPER_KEY }}
