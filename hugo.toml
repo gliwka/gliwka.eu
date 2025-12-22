@@ -1,0 +1,35 @@
+baseURL = 'https://gliwka.eu/'
+languageCode = 'en-us'
+title = 'gliwka.eu'
+theme = 'hugo-neso'
+
+[params]
+    [params.neso]
+        time_format                        = "2. January 2006"
+        show_breadcrumbs                   = true
+        ext_link_indicator                 = true
+        ext_link_no_opener_referrer        = true
+        ext_link_new_window                = true
+        [params.neso.branding]
+        logo_text                        = "gliwka.eu"
+        hide_logo_text                   = false
+        [params.neso.social]
+        [[params.neso.social.links]]
+            name                           = "Github"
+            url                            = "https://github.com/gliwka"
+        [[params.neso.social.links]]
+            name                           = "LinkedIn"
+            url                            = "https://www.linkedin.com/in/gliwka/"
+        [[params.neso.social.links]]
+            name                           = "Signal"
+            url                            = "https://signal.me/#eu/JocUtni5NzWiEGW2iXLE8MW3JvbtfH5wkyZX8tH3J500oDcnoPxDB5f8UlAnch2r"
+        [[params.neso.social.links]]
+            name                           = "Email"
+            url                            = "mailto:blog@gliwka.eu"
+        [params.neso.home]
+        display_mode                     = "profile"
+        [params.neso.home.list]
+            featured_entries_limit         = 2
+        [params.neso.home.profile]
+            avatar_image                   = "img/avatar.webp"
+            avatar_image_alt_text          = "Matthias Gliwka's avatar"
