@@ -2,4 +2,5 @@
 title           : "Matthias Gliwka"
 ---
 
-Hi 👋 I'm a product-minded engineer with a knack for unblocking delivery. I've executed high-stakes migrations, rearchitected microservices to restore velocity, and shifted architecture practice from mandates to collaboration. I bridge deep technical work with the org alignment required to continously ship value.
+Hi 👋 I'm Matthias. I focus on fixing the things that stop developers from shipping. Whether it’s hacking tooling to improve feedback loops, driving org alignment, or debugging a broken team culture - if it unblocks delivery or keeps my engineering skills sharp, I write about it here. 
+
