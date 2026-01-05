@@ -1,6 +1,6 @@
 baseURL = 'https://gliwka.eu/'
 languageCode = 'en-us'
-title = 'gliwka.eu'
+title = 'Matthias Gliwka'
 theme = 'hugo-neso'
 
 [params]
