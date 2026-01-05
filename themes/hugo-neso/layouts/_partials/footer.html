@@ -51,3 +51,6 @@
         </svg>
     </a>
 {{- end }}
+
+{{- $script := resources.Get "js/enhancements.js" | resources.Minify | resources.Fingerprint -}}
+<script src="{{ $script.Permalink }}" defer></script>

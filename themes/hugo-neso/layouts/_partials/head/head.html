@@ -213,15 +213,6 @@
             })
         })()
     </script>
-
-{{- else }}
-    <script>
-        (() => {
-            'use strict'
-            const colorScheme = '{{ string $forceColorScheme }}';
-            document.documentElement.setAttribute('data-color-scheme', colorScheme)
-        })()
-    </script>
 {{- end }}
 
 
