@@ -2,6 +2,33 @@ baseURL = 'https://gliwka.eu/'
 languageCode = 'en-us'
 title = 'Matthias Gliwka'
 theme = 'hugo-neso'
+mainSections = ['posts']
+
+[markup.goldmark.renderer]
+hardWraps = true
+
+[menu]
+  [[menu.main]]
+    identifier = "home"
+    name = "Home"
+    url = "/"
+    weight = 1
+  [[menu.main]]
+    identifier = "posts"
+    name = "Blog"
+    url = "/posts/"
+    weight = 2
+
+[[menu.footer]]
+    identifier = "privacy"
+    name = "Privacy Policy"
+    url = "/privacy-policy/"
+    weight = 1
+[[menu.footer]]
+    identifier = "legal-notice"
+    name = "Legal Notice"
+    url = "/legal-notice/"
+    weight = 2
 
 [params]
     [params.neso]
@@ -34,7 +61,7 @@ theme = 'hugo-neso'
             name                           = "Email"
             url                            = "mailto:blog@gliwka.eu"
         [params.neso.home]
-        display_mode                     = "profile"
+            display_mode                     = "profile"
         [params.neso.home.list]
             featured_entries_limit         = 2
         [params.neso.home.profile]
