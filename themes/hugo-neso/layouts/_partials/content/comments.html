@@ -1,2 +1,151 @@
-{{- /* Pick a commenting system provider and add your code below. */}}
-{{- /* Ref. https://gohugo.io/content-management/comments/ */}}
+{{- $uiIcons := partialCached "_funcs/get-ui-icons.html" . }}
+
+{{/* Dynamic comments: query site pages of type "comments" with Params.url matching the current page RelPermalink */}}
+{{- /* Determine post slug and select comments from the matching comments/<slug>/ folder */ -}}
+{{- $slug := default .File.BaseFileName .Slug }}
+{{- $commentsDir := printf "comments/%s/" $slug }}
+{{- $allComments := sort (where .Site.RegularPages "File.Dir" $commentsDir) "Date" "asc" }}
+{{- /* Top-level comments are those without a parent. Use Params.parent for hierarchy. */ -}}
+{{- $topComments := where $allComments "Params.parent" "==" nil }}
+
+{{ if eq .Section "posts" }}
+<section id="comments" class="mt-r-xl mb-r-xl">
+	<h2 class="text-2xl font-semibold mb-r-lg text-neso-fg1">Comments</h2>
+
+	{{ if gt (len $allComments) 0 }}
+	<ol class="space-y-6" aria-live="polite">
+		{{ range $topComments }}
+		<li class="flex gap-4" data-comment-id="{{ .Params.id }}">
+			<div class="flex-shrink-0">
+				<div class="h-10 w-10 rounded-full bg-neso-bg2 text-neso-fg1 flex items-center justify-center font-medium">{{ with .Params.author }}{{ substr . 0 2 | upper }}{{ else }}?{{ end }}</div>
+			</div>
+			<div class="flex-1">
+				<div class="flex items-baseline justify-between">
+					<div class="text-sm font-semibold text-neso-fg1">{{ with .Params.author }}{{ . }}{{ else }}Anonymous{{ end }}</div>
+					<time class="text-xs text-neso-fg3">{{ .Date.Format "Jan 2, 2006" }}</time>
+				</div>
+				{{- /* Render an optional @mention (Params.reply_to) before the comment text. */ -}}
+				<div class="mt-2 text-neso-fg1">
+					{{- with .Params.reply_to }}<span class="font-semibold text-neso-fg1">@{{ . }}</span>&nbsp;{{- end }}
+					{{- if .Content }}{{ .Content | safeHTML }}{{ else }}{{ with .Params.text }}{{ . }}{{ end }}{{ end -}}
+				</div>
+
+				<!-- Reply button (hidden by default; comments.js will enable it) -->
+				<div class="mt-3">
+					<button type="button" data-reply-btn="true" style="display:none" class="inline-flex items-center gap-2 text-sm text-neso-fg3 hover:text-neso-splash focus:outline-none" aria-label="Reply">
+						<svg class="size-4 stroke-2 stroke-current fill-none" aria-hidden="true">
+							<use href="{{ $uiIcons.RelPermalink }}#edit" />
+						</svg>
+						<span>Reply</span>
+					</button>
+				</div>
+			
+				{{- /* Render replies whose parent is this comment's id */ -}}
+				{{- $replies := sort (where $allComments "Params.parent" .Params.id) "Date" "asc" }}
+				{{ if gt (len $replies) 0 }}
+				<div class="mt-4 pl-6 sm:pl-12 border-l border-neso-deco2">
+					<ol class="space-y-4">
+						{{ range $replies }}
+						<li class="flex gap-3" data-comment-id="{{ .Params.id }}">
+							<div class="flex-shrink-0">
+								<div class="h-8 w-8 rounded-full bg-neso-bg2 text-neso-fg1 flex items-center justify-center font-medium">{{ with .Params.author }}{{ substr . 0 2 | upper }}{{ else }}?{{ end }}</div>
+							</div>
+							<div>
+								<div class="text-sm font-semibold text-neso-fg1">{{ with .Params.author }}{{ . }}{{ else }}Anonymous{{ end }}</div>
+								<div class="mt-1 text-neso-fg1">
+									{{- with .Params.reply_to }}<span class="font-semibold text-neso-fg1">@{{ . }}</span>&nbsp;{{- end }}
+									{{- if .Content }}{{ .Content | safeHTML }}{{ else }}{{ with .Params.text }}{{ . }}{{ end }}{{ end -}}
+								</div>
+								<div class="text-xs text-neso-fg3 mt-1">{{ .Date.Format "Jan 2, 2006" }}</div>
+
+								<!-- Reply button for nested replies (hidden by default; comments.js will enable it) -->
+								<div class="mt-2">
+									<button type="button" data-reply-btn="true" style="display:none" class="inline-flex items-center gap-2 text-sm text-neso-fg3 hover:text-neso-splash focus:outline-none" aria-label="Reply">
+										<svg class="size-4 stroke-2 stroke-current fill-none" aria-hidden="true">
+											<use href="{{ $uiIcons.RelPermalink }}#edit" />
+										</svg>
+										<span>Reply</span>
+									</button>
+								</div>
+							</div>
+						</li>
+						{{ end }}
+					</ol>
+				</div>
+				{{ end }}
+		</li>
+		{{ end }}
+	</ol>
+	{{ else }}
+	<div class="mb-r-lg text-neso-fg3">No comments yet. Be the first to share your thoughts.</div>
+	{{ end }}
+
+	<noscript class="mb-r-lg text-neso-fg3">To add a comment, please enable JavaScript in your browser.</noscript>
+
+	<div id="comment-form-container" class="mt-r-lg"></div>
+</section>
+
+<!-- Form for new top-level comments -->
+<template id="new-comment-form-template">
+	<form class="w-full sm:max-w-2xl" method="post">
+		<fieldset class="grid grid-cols-1 gap-4">
+			<input type="hidden" name="parent" value="">
+			<input type="hidden" name="reply_to" value="">
+			<label class="block">
+				<span class="text-sm font-medium text-neso-fg1">Pseudonym</span>
+				<input name="author" type="text" required class="mt-1 block w-full rounded-md border border-neso-deco2 bg-neso-bg0 px-3 py-2 text-sm shadow-sm placeholder:text-neso-fg3 focus:outline-none focus:ring-2 focus:ring-neso-splash" placeholder="Your name">
+			</label>
+			<label class="block">
+				<span class="text-sm font-medium text-neso-fg1" data-comment-label>Comment</span>
+				<textarea name="content" rows="4" required class="mt-1 block w-full rounded-md border border-neso-deco2 bg-neso-bg0 px-3 py-2 text-sm shadow-sm placeholder:text-neso-fg3 focus:outline-none focus:ring-2 focus:ring-neso-splash" placeholder="Write your comment..."></textarea>
+			</label>
+			<div class="flex items-center justify-end gap-4">
+				<button type="button" data-cancel-btn class="text-sm text-neso-fg3 hover:text-neso-splash">Cancel</button>
+				<button type="submit" class="inline-flex items-center gap-2 rounded-md bg-neso-bg3 px-4 py-2 text-sm font-medium text-neso-fg1 shadow hover:text-neso-splash focus:outline-none focus:ring-2 focus:ring-neso-splash" data-submit-btn>Publish Comment</button>
+			</div>
+		</fieldset>
+	</form>
+</template>
+
+<!-- Form for replies -->
+<template id="reply-form-template">
+	<div class="bg-neso-bg2 border border-neso-deco2 rounded-md p-4 w-full sm:max-w-2xl">
+		<form class="w-full" method="post">
+			<fieldset class="grid grid-cols-1 gap-3">
+				<input type="hidden" name="parent" value="">
+				<input type="hidden" name="reply_to" value="">
+				<label class="block">
+					<span class="text-sm font-medium text-neso-fg1">Pseudonym</span>
+					<input name="author" type="text" required class="mt-1 block w-full rounded-md border border-neso-deco2 bg-neso-bg0 px-3 py-2 text-sm shadow-sm placeholder:text-neso-fg3 focus:outline-none focus:ring-2 focus:ring-neso-splash" placeholder="Your name">
+				</label>
+				<label class="block">
+					<span class="text-sm font-medium text-neso-fg1" data-comment-label>Reply</span>
+					<textarea name="content" rows="3" required class="mt-1 block w-full rounded-md border border-neso-deco2 bg-neso-bg0 px-3 py-2 text-sm shadow-sm placeholder:text-neso-fg3 focus:outline-none focus:ring-2 focus:ring-neso-splash" placeholder="Write your reply..."></textarea>
+				</label>
+				<div class="flex items-center justify-end gap-4">
+					<button type="button" data-cancel-btn class="text-sm text-neso-fg3 hover:text-neso-splash">Cancel</button>
+					<button type="submit" class="inline-flex items-center gap-2 rounded-md bg-neso-bg3 px-3 py-1.5 text-sm font-medium text-neso-fg1 shadow hover:text-neso-splash focus:outline-none focus:ring-2 focus:ring-neso-splash" data-submit-btn>Publish Reply</button>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</template>
+
+<!-- Wrapper for top-level replies -->
+<template id="top-level-reply-wrapper-template">
+	<div class="mt-4 border-l border-neso-deco2"></div>
+</template>
+
+<!-- Wrapper for nested replies -->
+<template id="nested-reply-wrapper-template">
+	<li class="ml-6 sm:ml-12 mt-2"></li>
+</template>
+
+<!-- Template for comment submission success message -->
+<template id="comment-success-message-template">
+    <blockquote class="alert alert-tip rounded-lg p-4 bg-[--color-neso-okay]/10 border border-[--color-neso-okay]/30 text-neso-fg1 w-full sm:max-w-2xl">
+        <p class="alert-title">Success</p>
+        <p>Your comment has been submitted for review and will be published shortly.</p>
+    </blockquote>
+</template>
+{{ end }}
