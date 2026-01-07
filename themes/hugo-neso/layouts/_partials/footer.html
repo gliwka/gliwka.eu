@@ -2,6 +2,9 @@
 
     {{- $uiIcons     := partialCached "_funcs/get-ui-icons.html" . }}
 
+    <div class="layout-fluid flex items-center justify-center text-center text-base text-neso-fg3 overflow-x-hidden">
+        <span>Made with ❤️ in <span class="text-3xl align-middle">&#127466;&#127482;</span></span>
+    </div>
     <footer class="layout-fluid py-r-xl flex flex-wrap items-center justify-center text-center text-sm text-neso-fg3 overflow-x-hidden">
     
     {{- if not site.Params.neso.hide_copyright }}
@@ -10,16 +13,25 @@
         </span>
     {{- end }}
 
-      <span class="flex items-center not-first:sep-s-general">
-            <span>Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a></span>
-        </span>
-
-    {{- with site.Params.neso.footer_text }}
-        <span class="flex items-center not-first:sep-s-general">
-            <span>{{ . | markdownify }}</span>
-        </span>
-    {{- end }}
-    
+              <span class="flex items-center not-first:sep-s-general">
+                  <span>Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a></span>
+              </span>
+      
+              {{- with site.Menus.footer }}
+              <nav class="flex items-center not-first:sep-s-general">
+                  {{- range . }}
+                  <span class="flex items-center not-first:sep-s-general">
+                      <a href="{{ .URL }}">{{ .Name }}</a>
+                  </span>
+                  {{- end }}
+              </nav>
+              {{- end }}
+      
+          {{- with site.Params.neso.footer_text }}
+              <span class="flex items-center not-first:sep-s-general">
+                  <span>{{ . | markdownify }}</span>
+              </span>
+          {{- end }}    
         {{- if not site.Params.neso.force_color_scheme }}
         <div class="basis-full pt-r-lg">
             <ul class="color-scheme-control inline-flex flex-nowrap p-[.125em] ring ring-neso-deco2 rounded-full" role="radiogroup" aria-label="Color scheme">

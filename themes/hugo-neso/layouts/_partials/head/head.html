@@ -265,6 +265,7 @@
 {{- end }}
 {{- $pwa := resources.Get "manifest.json" | resources.ExecuteAsTemplate "manifest.json" . }}
 <link rel="manifest" href="{{ $pwa.Permalink }}">
+<link rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">
 
 
 {{- /* Styles */}}

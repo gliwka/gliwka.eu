@@ -11,6 +11,12 @@ theme = 'hugo-neso'
         ext_link_no_opener_referrer        = true
         ext_link_new_window                = true
         force_color_scheme                 = "dark"
+        [params.neso.page]
+            enable_comments                = true
+        [params.neso.seo]
+            site_description                 = ""
+            site_keywords                    = []
+            site_author                      = "Matthias Gliwka"
         [params.neso.branding]
         logo_text                        = "gliwka.eu"
         hide_logo_text                   = false

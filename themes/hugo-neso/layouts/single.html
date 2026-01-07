@@ -3,8 +3,19 @@
 {{- $uiIcons := partialCached "_funcs/get-ui-icons.html" . }}
 
 <section class="layout last:expansive">
-    <article>
-
+    <article class="h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+        <link itemprop="mainEntityOfPage" href="{{ .Permalink }}" />
+        <meta itemprop="url" content="{{ .Permalink }}" />
+        <meta class="u-url u-uid" itemprop="url" content="{{ .Permalink }}" />
+        {{- with .Description }}
+                    <meta class="p-summary" itemprop="description" content="{{ . }}" />
+                {{- end }}
+            
+                {{- with partial "_funcs/get-author.html" . }}
+                    {{- range . }}
+                        <span class="p-author h-card sr-only">{{ . }}</span>
+                    {{- end }}
+                {{- end }}
         {{- partial "content/header.html" . }}
         
         {{- $coverHidden := .Param "neso.cover.hidden_in_single" | default false }}
@@ -24,7 +35,7 @@
         {{- end }}
 
         {{- if .Content }}
-            <div class="cnt mb-r-xl last:mb-0">
+            <div class="cnt mb-r-xl last:mb-0 e-content" itemprop="articleBody">
                 {{- if not site.Params.neso.page.disable_heading_links }}
                     {{- partial "content/heading_links.html" .Content }}
                 {{- else }}
@@ -58,10 +69,17 @@
             <ul class="flex flex-wrap gap-3 mb-r-lg last:mb-0">
                 {{- range ($.GetTerms $tags) }}
                     <li class="contents">
-                        <a class="btn" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+                        <a class="btn p-category" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
                     </li>
                 {{- end }}
             </ul>
+            {{- $tags_list := slice }}
+            {{- range ($.GetTerms $tags) }}
+                {{- $tags_list = $tags_list | append .LinkTitle }}
+            {{- end }}
+            {{- with (delimit $tags_list ", ") }}
+                <meta itemprop="keywords" content="{{ . }}" />
+            {{- end }}
             {{- if $showShare }}
                 {{- partial "content/share.html" . }}
             {{- end }}

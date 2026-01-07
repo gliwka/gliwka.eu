@@ -15,7 +15,10 @@
                         flex flex-col gap-5
                         {{ cond $isHero "first-entry" "md:flex-row" }}
                         mb-r-lg p-4 md:p-5 rounded-2xl
-                        transition bg-neso-bg0">
+                        transition bg-neso-bg0 h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+            <link itemprop="mainEntityOfPage" href="{{ .Permalink }}" />
+            <meta itemprop="url" content="{{ .Permalink }}" />
+            <meta class="u-url u-uid" itemprop="url" content="{{ .Permalink }}" />
             {{- $siteHideCover := site.Params.neso.list.hide_cover_image }}
             {{- $coverHidden := cond $siteHideCover true (.Params.neso.cover.hidden_in_list) }}
 
@@ -46,13 +49,18 @@
                         <a class="ui-link hover:text-neso-splash focus-visible:text-neso-splash font-semibold after:absolute after:inset-0 after:z-10 after:content-['']"
                            href="{{ .RelPermalink }}"
                            aria-label="{{ i18n "entry_link_aria" (dict "Title" (.Title | plainify)) | default (printf "Read “%s”" (.Title | plainify)) }}">
-                            {{ .Title }}
-                        </a>
-                    </h2>
-                </header>
+            <span class="p-name" itemprop="headline">{{ .Title }}</span>
+        </a>
+    </h2>
+    {{- with partial "_funcs/get-author.html" . }}
+        {{- range . }}
+            <span class="p-author h-card sr-only">{{ . }}</span>
+        {{- end }}
+    {{- end }}
+</header>
 
                 {{- if not site.Params.neso.list.hide_summary }}
-                    <div class="mb-r-sm last:mb-0 {{- cond $isHero " text-lg" " text-base" }}">
+                    <div class="mb-r-sm last:mb-0 p-summary {{- cond $isHero " text-lg" " text-base" }}" itemprop="description">
                         <p>{{- .Summary | plainify | htmlUnescape -}}{{- if .Truncated -}}...{{- end -}}</p>
                     </div>
                 {{- end }}

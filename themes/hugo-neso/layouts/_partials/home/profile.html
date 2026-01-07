@@ -11,7 +11,7 @@
         {{- $size     := int (.avatar_image_size | default 160) }}
         {{- $sizeSm   := int (.avatar_image_size_sm | default 128) }}
         {{- $figClass := printf "not-last:mb-r-lg size-[%dpx] md:size-[%dpx] rounded-full overflow-clip" $sizeSm $size }}
-        {{- $imgClass := "size-full object-cover" }}
+        {{- $imgClass := "size-full object-cover u-photo" }}
 
         {{- /* absolute url or asset? */}}
         {{- $isAbs := (urls.Parse .avatar_image).IsAbs }}
@@ -78,16 +78,17 @@
 
     {{- end }}
 
-    <div class="text-center">
-        <h1 class="not-last:mb-r-md font-bold text-3xl md:text-4xl text-neso-fg1">
+    <div class="text-center h-card">
+        <h1 class="not-last:mb-r-md font-bold text-3xl md:text-4xl text-neso-fg1 p-name">
             {{ $.Title | default site.Title | markdownify }}
         </h1>
         {{- with $.Content | default site.Params.neso.seo.site_description }}
-            <div class="not-last:mb-r-lg text-lg">
+            <div class="not-last:mb-r-lg text-lg p-note">
                 {{ . }}
             </div>
         {{- end }}
 
+        <a class="u-url" href="{{ site.BaseURL }}" hidden></a>
         {{- partial "home/social_icons.html" (dict "align" "center") }}
 
         {{- with .link_btns }}

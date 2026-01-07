@@ -5,3 +5,11 @@ Suitable for: custom JavaScript
 */}}
 
 {{- /* Write your custom code here */}}
+{{- /* Include comments JS on post pages only. The script lives in themes/hugo-neso/assets/js/comments.js */}}
+{{- if and .IsPage (eq .Section "posts") }}
+	{{- $commentsJs := resources.Get "js/comments.js" -}}
+	{{- if $commentsJs -}}
+		{{- $commentsJs = $commentsJs | resources.Minify | resources.Fingerprint -}}
+		<script defer src="{{ $commentsJs.RelPermalink }}"></script>
+	{{- end -}}
+{{- end -}}

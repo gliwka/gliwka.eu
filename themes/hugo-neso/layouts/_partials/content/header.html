@@ -5,7 +5,7 @@
     {{- partial "breadcrumbs.html" . }}
 
     <hgroup class="not-last:mb-r-md">
-        <h1 class="flex items-center not-last:mb-r-md hyphens-auto font-bold text-3xl md:text-4xl text-neso-fg1">
+        <h1 class="flex items-center not-last:mb-r-md hyphens-auto font-bold text-3xl md:text-4xl text-neso-fg1" itemprop="headline">
             {{- if .Draft }}
                 <span class="flex order-last items-center gap-1
                              ms-auto px-2 py-1
@@ -18,7 +18,7 @@
                     </span>
                 </span>
             {{- end }}
-            {{ .Title }}
+            <span class="p-name">{{ .Title }}</span>
 
             {{- $alwaysShowRSS := site.Params.neso.list.provide_rss_for_each_list }}
             {{- $isArchives    := and (eq .Layout "archives") .IsPage }}

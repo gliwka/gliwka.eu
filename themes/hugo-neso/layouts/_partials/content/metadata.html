@@ -1,10 +1,11 @@
 {{- /* Collect post meta items in a scratch for flexible rendering */}}
 {{- $metaScratch := newScratch }}
 
+{{- $dateFormat := site.Params.neso.time_format | default ":date_medium" }}
+
 {{- /* 1) Date */}}
 {{- if not .Date.IsZero }}
     {{- $dateTitle := printf "%v - %v" (.Date | time.Format ":date_full") (.Date | time.Format ":time_long") }}
-    {{- $dateFormat := site.Params.neso.time_format | default ":date_medium" }}
     {{- $dateText := .Date | time.Format $dateFormat }}
     {{- $metaScratch.Add "meta" (slice (dict "kind" "date" "title" $dateTitle "text" $dateText)) }}
 {{- end }}
@@ -41,7 +42,12 @@
         {{- if reflect.IsMap $item }}
             {{- $kind := index $item "kind" }}
             {{- if eq $kind "date" }}
-                <span class="not-last:sep-e-general" title="{{ index $item "title" }}">{{- index $item "text" -}}</span>
+                <span class="not-last:sep-e-general">
+                    <time class="dt-published" datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}" itemprop="datePublished">{{- index $item "text" -}}</time>
+                    {{- if ne .Date .Lastmod }}
+                        <time class="dt-updated" datetime="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}" itemprop="dateModified">{{- .Lastmod.Format $dateFormat -}}</time>
+                    {{- end }}
+                </span>
             {{- else if eq $kind "text" }}
                 <span class="not-last:sep-e-general">{{- index $item "text" -}}</span>
             {{- else if eq $kind "authors" }}
@@ -50,8 +56,8 @@
                 <span class="sr-only">{{- i18n "author" | default "Author: " -}}</span>
                 <ul class="contents not-last:sep-e-general">
                     {{- range $i, $name := $list }}
-                        <li class="hyphens-auto {{- if lt $i $last }} sep-e-and{{- end }}">
-                            {{- $name -}}
+                        <li class="hyphens-auto {{- if lt $i $last }} sep-e-and{{- end }}" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                            <span class="p-author h-card" itemprop="name">{{- $name -}}</span>
                         </li>
                     {{- end }}
                 </ul>
