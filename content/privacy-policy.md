@@ -18,6 +18,8 @@ Europaring 90
 Germany
 
 privacy@gliwka.eu
++49 1579 2618054
+
 
 ## 2. Information I Collect and Legal Basis
 

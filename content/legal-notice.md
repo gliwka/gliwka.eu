@@ -15,8 +15,8 @@ Germany
 
 ## Contact
 **Email:** impressum@gliwka.eu
+**Phone:** +49 1579 2618054
 
-*(Note: German law strongly requires a phone number for "rapid communication." If you do not want to list your private mobile, consider getting a cheap VoIP landline number (like Sipgate) just for this purpose.)*
 
 ## Editorial Responsibility
 Responsible for the content according to § 18 Abs. 2 MStV:
